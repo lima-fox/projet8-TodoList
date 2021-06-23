@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 class UserController extends Controller
 {
     /**
-     * @Route("/users", name="user_list")
+     * @Route("/admin/users", name="user_list")
      */
     public function listAction()
     {
@@ -20,6 +20,8 @@ class UserController extends Controller
 
     /**
      * @Route("/users/create", name="user_create")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function createAction(Request $request)
     {
@@ -32,6 +34,16 @@ class UserController extends Controller
             $em = $this->getDoctrine()->getManager();
             $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
             $user->setPassword($password);
+            $data = $request->request->all();
+            $role = $data['user']['roles'];
+            if ($role == 1)
+            {
+                $user->setRoles(['ROLE_ADMIN']);
+            }
+            else
+            {
+                $user->setRoles(['ROLE_USER']);
+            }
 
             $em->persist($user);
             $em->flush();
