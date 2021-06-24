@@ -30,7 +30,7 @@ class UserController extends Controller
 
         $form->handleRequest($request);
 
-        if ($form->isValid() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
             $user->setPassword($password);
@@ -58,6 +58,9 @@ class UserController extends Controller
 
     /**
      * @Route("/admin/users/{id}/edit", name="user_edit")
+     * @param User $user
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function editAction(User $user, Request $request)
     {
@@ -65,9 +68,19 @@ class UserController extends Controller
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
             $user->setPassword($password);
+            $data = $request->request->all();
+            $role = $data['user']['roles'];
+            if ($role == 1)
+            {
+                $user->setRoles(['ROLE_ADMIN']);
+            }
+            else
+            {
+                $user->setRoles(['ROLE_USER']);
+            }
 
             $this->getDoctrine()->getManager()->flush();
 
