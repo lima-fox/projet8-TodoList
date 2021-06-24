@@ -30,7 +30,7 @@ class UserController extends Controller
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isValid() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
             $user->setPassword($password);
@@ -50,14 +50,14 @@ class UserController extends Controller
 
             $this->addFlash('success', "L'utilisateur a bien été ajouté.");
 
-            return $this->redirectToRoute('user_list');
+            return $this->redirectToRoute('homepage');
         }
 
         return $this->render('user/create.html.twig', ['form' => $form->createView()]);
     }
 
     /**
-     * @Route("/users/{id}/edit", name="user_edit")
+     * @Route("/admin/users/{id}/edit", name="user_edit")
      */
     public function editAction(User $user, Request $request)
     {
