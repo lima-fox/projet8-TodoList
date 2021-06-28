@@ -23,7 +23,7 @@ class TaskController extends Controller
      */
     public function createAction(Request $request)
     {
-        $author = $this->getUser();
+        $user = $this->getUser();
         $task = new Task();
         $form = $this->createForm(TaskType::class, $task);
 
@@ -31,7 +31,7 @@ class TaskController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $task->setUser($author);
+            $task->setUser($user);
 
             $em->persist($task);
             $em->flush();
@@ -46,6 +46,10 @@ class TaskController extends Controller
 
     /**
      * @Route("/tasks/{id}/edit", name="task_edit")
+     * @param Task $task
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
      */
     public function editAction(Task $task, Request $request)
     {
@@ -54,6 +58,9 @@ class TaskController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+            $updatedAt = new \DateTime();
+            $task->setUpdatedAt($updatedAt);
+
             $this->getDoctrine()->getManager()->flush();
 
             $this->addFlash('success', 'La tâche a bien été modifiée.');

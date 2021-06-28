@@ -14,7 +14,8 @@
                     </h4>
                     <h4><a href="{{ path('task_edit', {'id' : task.id }) }}">{{ task.title }}</a></h4>
                     <p>{{ task.content }}</p>
-                    <p>Crée par: {{ task.getUser().getUsername }}</p>
+                    <p>Crée par: {{ task.getUser().getUsername() }}, le {{ task.getDateString() }}</p>
+                    {% if task.updatedAt %}<p>Modifiée le: {{ task.getUpdateString() }}</p>{% endif %}
                 </div>
                 <div>
                     <form action="{{ path('task_toggle', {'id' : task.id }) }}">
