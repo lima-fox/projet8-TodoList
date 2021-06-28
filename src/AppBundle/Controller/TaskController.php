@@ -91,9 +91,8 @@ class TaskController extends Controller
     /**
      * @Route("/tasks/{id}/delete", name="task_delete")
      */
-    public function deleteTaskAction(Task $task, User $user, $id)
+    public function deleteTaskAction(Task $task)
     {
-        $task = $this->getDoctrine()->getRepository(Task::class)->find($id);
         $user = $this->getUser();
 
         if ($task->getUser() == null)
