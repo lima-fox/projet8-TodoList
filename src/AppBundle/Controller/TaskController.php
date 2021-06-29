@@ -97,11 +97,19 @@ class TaskController extends Controller
 
         if ($task->getUser() == null)
         {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($task);
-            $em->flush();
+            if ($this->getUser()->getRoles() == ['ROLE_ADMIN'] || $this->getUser()->getRoles() == ['ROLE_SUPER_ADMIN'])
+            {
+                $em = $this->getDoctrine()->getManager();
+                $em->remove($task);
+                $em->flush();
 
-            $this->addFlash('success', 'La tâche a bien été supprimée.');
+                $this->addFlash('success', 'La tâche a bien été supprimée.');
+            }
+            else
+            {
+                $this->addFlash('error', 'Seul un administrateur peut supprimer cette tâche');
+            }
+
         }
         elseif ($user->getId() == $task->getUser()->getId())
         {
