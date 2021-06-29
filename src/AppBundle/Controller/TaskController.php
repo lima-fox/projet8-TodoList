@@ -97,8 +97,8 @@ class TaskController extends Controller
 
         if ($task->getUser() == null)
         {
-            if ($this->getUser()->getRoles() == in_array('ROLE_ADMIN', $this->getUser()->getRoles()) ||
-                $this->getUser()->getRoles() == in_array('ROLE_SUPER_ADMIN', $this->getUser()->getRoles()))
+            if (in_array('ROLE_ADMIN', $this->getUser()->getRoles()) ||
+                in_array('ROLE_SUPER_ADMIN', $this->getUser()->getRoles()))
             {
                 $em = $this->getDoctrine()->getManager();
                 $em->remove($task);
