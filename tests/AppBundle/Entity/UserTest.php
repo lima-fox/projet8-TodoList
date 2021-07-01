@@ -5,7 +5,6 @@ namespace Tests\AppBundle\Entity;
 
 use AppBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\Validator\ValidatorBuilder;
 
 class UserTest extends WebTestCase
 {
