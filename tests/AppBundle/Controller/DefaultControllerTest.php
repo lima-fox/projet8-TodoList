@@ -6,8 +6,17 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class DefaultControllerTest extends WebTestCase
 {
-    public function testIndex()
+    private $client;
+
+    public function setUp()
     {
-        $this->assertEquals(2, 1+1);
+        $this->client = static::createClient();
+    }
+
+    /** @test  */
+    public function testPageIsFound() {
+        $this->client->request('GET', "/");
+
+        $this->assertTrue($this->client->getResponse()->isRedirection());
     }
 }
