@@ -5,9 +5,12 @@ namespace Tests\AppBundle\Controller;
 
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Tests\UserCo;
 
 class SecurityControllerTest extends WebTestCase
 {
+    use UserCo;
+
     private $client;
 
     public function setUp()
@@ -24,16 +27,7 @@ class SecurityControllerTest extends WebTestCase
 
     public function testLoginFormValidAuth()
     {
-        $crawler = $this->client->request('GET', "/login");
-        $form = $crawler->selectButton('Se connecter')->form([
-            '_username' => 'limax',
-            '_password' => 'blob'
-        ]);
-        $this->client->submit($form);
-
-        $this->client->request("GET", "/");
-        $this->assertContains('Bienvenue sur Todo List' , $this->client->getResponse()->getContent());
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->login($this->client, $this);
     }
 
     public function testBadCredentials()
@@ -53,16 +47,7 @@ class SecurityControllerTest extends WebTestCase
 
     public function testLogout()
     {
-        $crawler = $this->client->request('GET', "/login");
-        $form = $crawler->selectButton('Se connecter')->form([
-            '_username' => 'limax',
-            '_password' => 'blob'
-        ]);
-        $this->client->submit($form);
-
-        $this->client->request("GET", "/");
-        $this->assertContains('Bienvenue sur Todo List' , $this->client->getResponse()->getContent());
-        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->login($this->client, $this);
 
         $this->client->request('GET', "/logout");
 
