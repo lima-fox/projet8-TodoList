@@ -27,7 +27,7 @@ class SecurityControllerTest extends WebTestCase
 
     public function testLoginFormValidAuth()
     {
-        $this->login($this->client, $this);
+        $this->loginAsSuperAdmin($this->client, $this);
     }
 
     public function testBadCredentials()
@@ -47,7 +47,7 @@ class SecurityControllerTest extends WebTestCase
 
     public function testLogout()
     {
-        $this->login($this->client, $this);
+        $this->loginAsSuperAdmin($this->client, $this);
 
         $this->client->request('GET', "/logout");
 

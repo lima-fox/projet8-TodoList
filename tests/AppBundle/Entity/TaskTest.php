@@ -11,6 +11,7 @@ class TaskTest extends WebTestCase
 {
     private $task;
     private $client;
+    private $validator;
 
     public function setUp()
     {
@@ -19,11 +20,12 @@ class TaskTest extends WebTestCase
         $this->task->setContent('Un contenu test');
 
         $this->client = static::createClient();
+        $this->validator = $this->client->getContainer()->get('validator');
     }
 
     public function testValidEntity()
     {
-        $errors = $this->client->getContainer()->get('validator')->validate($this->task);
+        $errors = $this->validator->validate($this->task);
 
         $this->assertCount(0, $errors);
     }
@@ -31,7 +33,7 @@ class TaskTest extends WebTestCase
     public function testTitleNotBlank()
     {
         $this->task->setTitle('');
-        $errors = $this->client->getContainer()->get('validator')->validate($this->task);
+        $errors = $this->validator->validate($this->task);
 
         $this->assertCount(1, $errors);
     }
@@ -39,7 +41,7 @@ class TaskTest extends WebTestCase
     public function testContentNotBlank()
     {
         $this->task->setContent('');
-        $errors = $this->client->getContainer()->get('validator')->validate($this->task);
+        $errors = $this->validator->validate($this->task);
 
         $this->assertCount(1, $errors);
     }

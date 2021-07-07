@@ -4,26 +4,38 @@
 namespace Tests;
 
 
-use AppBundle\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\BrowserKit\Client;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
 
 Trait UserCo
 {
-    public function login (Client $client, WebTestCase $case)
+    private function login (Client $client, WebTestCase $case, $user, $pass)
     {
         $crawler = $client->request('GET', "/login");
         $form = $crawler->selectButton('Se connecter')->form([
-            '_username' => 'limax',
-            '_password' => 'blob'
+            '_username' => $user,
+            '_password' => $pass
         ]);
         $client->submit($form);
 
         $client->request("GET", "/");
         $case->assertContains('Bienvenue sur Todo List' , $client->getResponse()->getContent());
         $case->assertEquals(200, $client->getResponse()->getStatusCode());
+    }
+
+    public function loginAsSuperAdmin(Client $client, WebTestCase $case)
+    {
+        $this->login($client, $case, "limax", "blob");
+    }
+
+    public function loginAsAdmin(Client $client, WebTestCase $case)
+    {
+        $this->login($client, $case, 'lima', 'blob');
+    }
+
+    public function loginAsUser(Client $client, WebTestCase $case)
+    {
+        $this->login($client, $case, 'nyamou', 'miaou');
     }
 }

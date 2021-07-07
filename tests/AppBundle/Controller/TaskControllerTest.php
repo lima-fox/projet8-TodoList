@@ -27,7 +27,7 @@ class TaskControllerTest extends WebTestCase
 
     public function testTasksPageAsLogged()
     {
-        $this->login($this->client, $this);
+        $this->loginAsUser($this->client, $this);
 
         $this->client->request('GET', '/tasks');
         $this->assertEquals('200', $this->client->getResponse()->getStatusCode());
@@ -35,7 +35,7 @@ class TaskControllerTest extends WebTestCase
 
     public function testCreateTaskPageAsLogged()
     {
-        $this->login($this->client, $this);
+        $this->loginAsUser($this->client, $this);
 
         $this->client->request('GET', '/tasks/create');
         $this->assertEquals('200', $this->client->getResponse()->getStatusCode());
@@ -49,7 +49,7 @@ class TaskControllerTest extends WebTestCase
 
     public function testCreateTask()
     {
-        $this->login($this->client, $this);
+        $this->loginAsSuperAdmin($this->client, $this);
 
         $crawler = $this->client->request('GET', "/tasks/create");
         $form = $crawler->selectButton('Ajouter')->form([
@@ -64,7 +64,7 @@ class TaskControllerTest extends WebTestCase
 
     public function testEditTask()
     {
-        $this->login($this->client, $this);
+        $this->loginAsSuperAdmin($this->client, $this);
 
         $crawler = $this->client->request('GET', "/tasks/15/edit");
         $form = $crawler->selectButton('Modifier')->form([
@@ -76,4 +76,23 @@ class TaskControllerTest extends WebTestCase
         $this->client->followRedirect();
         $this->assertEquals('200', $this->client->getResponse()->getStatusCode());
     }
+
+    public function testToggleTask()
+    {
+        $this->loginAsSuperAdmin($this->client, $this);
+
+        $this->client->request('GET', "/tasks/21/toggle");
+        $this->client->followRedirect();
+        $this->assertEquals('200', $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testDeleteTask()
+    {
+        $this->loginAsSuperAdmin($this->client, $this);
+
+        $this->client->request('GET', '/tasks/21/delete');
+        $this->client->followRedirect();
+        $this->assertEquals('200', $this->client->getResponse()->getStatusCode());
+    }
+
 }
