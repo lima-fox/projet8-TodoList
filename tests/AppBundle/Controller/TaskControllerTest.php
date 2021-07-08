@@ -81,7 +81,7 @@ class TaskControllerTest extends WebTestCase
     {
         $this->loginAsSuperAdmin($this->client, $this);
 
-        $this->client->request('GET', "/tasks/21/toggle");
+        $this->client->request('GET', "/tasks/23/toggle");
         $this->client->followRedirect();
         $this->assertEquals('200', $this->client->getResponse()->getStatusCode());
     }
@@ -90,7 +90,7 @@ class TaskControllerTest extends WebTestCase
     {
         $this->loginAsSuperAdmin($this->client, $this);
 
-        $this->client->request('GET', '/tasks/21/delete');
+        $this->client->request('GET', '/tasks/23/delete');
         $this->client->followRedirect();
         $this->assertEquals('200', $this->client->getResponse()->getStatusCode());
     }

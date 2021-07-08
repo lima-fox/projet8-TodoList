@@ -95,7 +95,7 @@ class UserController extends Controller
             $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
             $user->setPassword($password);
             $data = $request->request->all();
-            $role = $data['user']['roles'];
+            $role = $data['admin_user']['roles'];
             if ($role == self::ROLE_ADMIN)
             {
                 $user->setRoles(['ROLE_ADMIN']);
