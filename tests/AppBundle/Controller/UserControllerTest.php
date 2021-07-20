@@ -18,6 +18,16 @@ class UserControllerTest extends WebTestCase
         $this->client = static::createClient();
     }
 
+    public function getLastUserId()
+    {
+        $em = $this->client->getContainer()->get("doctrine.orm.entity_manager");
+        return $em->createQueryBuilder()
+            ->select('MAX(e.id)')
+            ->from('AppBundle:User', 'e')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     public function testAdminUsersPageAsAnonymousOrUser()
     {
         $this->client->request('GET', '/admin/users');
@@ -110,5 +120,15 @@ class UserControllerTest extends WebTestCase
         $this->client->submit($form);
 
         $this->assertEquals('302', $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testDeleteUserAsSuperAdmin()
+    {
+        $this->loginAsSuperAdmin($this->client, $this);
+
+        $id = $this->getLastUserId();
+        $this->client->request('GET', "/admin/users/$id/delete");
+        $this->client->followRedirect();
+        $this->assertEquals('200', $this->client->getResponse()->getStatusCode());
     }
 }

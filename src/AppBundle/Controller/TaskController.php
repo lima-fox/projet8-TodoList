@@ -112,6 +112,7 @@ class TaskController extends Controller
                 $this->addFlash('error', 'Seul un administrateur peut supprimer cette tâche');
             }
 
+            
         }
         elseif ($user->getId() == $task->getUser()->getId())
         {

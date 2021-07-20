@@ -156,4 +156,24 @@ class UserController extends Controller
         return $this->render('user/admin_edit.html.twig', ['form' => $form->createView(), 'user' => $user]);
     }
 
+    /**
+     * @Route("/admin/users/{id}/delete", name="user_delete")
+     */
+    public function DeleteUserAction(User $user)
+    {
+        if ($this->getUser()->getRoles() == ["ROLE_ADMIN"] && $user->getRoles() == ["ROLE_SUPER_ADMIN"])
+        {
+            $this->addFlash('error', "Vous ne pouvez pas supprimer cet utilisateur.");
+            return $this->redirectToRoute('user_list');
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($user);
+        $em->flush();
+
+        $this->addFlash('success', "L'utilisateur a bien été supprimé");
+
+        return $this->redirectToRoute('user_list');
+    }
+
 }

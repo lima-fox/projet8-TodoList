@@ -18,6 +18,16 @@ class TaskControllerTest extends WebTestCase
         $this->client = static::createClient();
     }
 
+    public function getLastTaskId()
+    {
+        $em = $this->client->getContainer()->get("doctrine.orm.entity_manager");
+        return $em->createQueryBuilder()
+            ->select('MAX(e.id)')
+            ->from('AppBundle:Task', 'e')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     public function testTasksPageAsAnonymous()
     {
         $this->client->request('GET', '/tasks');
@@ -47,7 +57,15 @@ class TaskControllerTest extends WebTestCase
         $this->assertEquals('302', $this->client->getResponse()->getStatusCode());
     }
 
-    public function testCreateTask()
+    public function testNominalFlow()
+    {
+        $this->CreateTask();
+        $this->EditTask();
+        $this->ToggleTask();
+        $this->DeleteTask();
+    }
+
+    public function CreateTask()
     {
         $this->loginAsSuperAdmin($this->client, $this);
 
@@ -62,11 +80,13 @@ class TaskControllerTest extends WebTestCase
         $this->assertEquals('200', $this->client->getResponse()->getStatusCode());
     }
 
-    public function testEditTask()
+    public function EditTask()
     {
         $this->loginAsSuperAdmin($this->client, $this);
 
-        $crawler = $this->client->request('GET', "/tasks/15/edit");
+        $id = $this->getLastTaskId();
+
+        $crawler = $this->client->request('GET', "/tasks/$id/edit");
         $form = $crawler->selectButton('Modifier')->form([
             'task[title]' => 'Un titre de test modifié',
             'task[content]' => 'Un contenu de test modifié'
@@ -77,20 +97,20 @@ class TaskControllerTest extends WebTestCase
         $this->assertEquals('200', $this->client->getResponse()->getStatusCode());
     }
 
-    public function testToggleTask()
+    public function ToggleTask()
     {
         $this->loginAsSuperAdmin($this->client, $this);
-
-        $this->client->request('GET', "/tasks/23/toggle");
+        $id = $this->getLastTaskId();
+        $this->client->request('GET', "/tasks/$id/toggle");
         $this->client->followRedirect();
         $this->assertEquals('200', $this->client->getResponse()->getStatusCode());
     }
 
-    public function testDeleteTask()
+    public function DeleteTask()
     {
         $this->loginAsSuperAdmin($this->client, $this);
-
-        $this->client->request('GET', '/tasks/23/delete');
+        $id = $this->getLastTaskId();
+        $this->client->request('GET', "/tasks/$id/delete");
         $this->client->followRedirect();
         $this->assertEquals('200', $this->client->getResponse()->getStatusCode());
     }

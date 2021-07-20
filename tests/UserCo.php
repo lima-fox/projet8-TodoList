@@ -31,11 +31,11 @@ Trait UserCo
 
     public function loginAsAdmin(Client $client, WebTestCase $case)
     {
-        $this->login($client, $case, 'lima', 'blob');
+        $this->login($client, $case, 'user_admin', 'blob');
     }
 
     public function loginAsUser(Client $client, WebTestCase $case)
     {
-        $this->login($client, $case, 'nyamou', 'miaou');
+        $this->login($client, $case, 'user_test', 'blob');
     }
 }
