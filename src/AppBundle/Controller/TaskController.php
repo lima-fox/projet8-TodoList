@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Task;
+use AppBundle\Entity\User;
 use AppBundle\Form\TaskType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -23,6 +24,7 @@ class TaskController extends Controller
      */
     public function createAction(Request $request)
     {
+        $user = $this->getUser();
         $task = new Task();
         $form = $this->createForm(TaskType::class, $task);
 
@@ -30,6 +32,7 @@ class TaskController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
+            $task->setUser($user);
 
             $em->persist($task);
             $em->flush();
@@ -44,6 +47,10 @@ class TaskController extends Controller
 
     /**
      * @Route("/tasks/{id}/edit", name="task_edit")
+     * @param Task $task
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
      */
     public function editAction(Task $task, Request $request)
     {
@@ -52,6 +59,9 @@ class TaskController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+            $updatedAt = new \DateTime();
+            $task->setUpdatedAt($updatedAt);
+
             $this->getDoctrine()->getManager()->flush();
 
             $this->addFlash('success', 'La tâche a bien été modifiée.');
@@ -83,11 +93,38 @@ class TaskController extends Controller
      */
     public function deleteTaskAction(Task $task)
     {
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($task);
-        $em->flush();
+        $user = $this->getUser();
 
-        $this->addFlash('success', 'La tâche a bien été supprimée.');
+        if ($task->getUser() == null)
+        {
+            if (in_array('ROLE_ADMIN', $this->getUser()->getRoles()) ||
+                in_array('ROLE_SUPER_ADMIN', $this->getUser()->getRoles()))
+            {
+                $em = $this->getDoctrine()->getManager();
+                $em->remove($task);
+                $em->flush();
+
+                $this->addFlash('success', 'La tâche a bien été supprimée.');
+            }
+            else
+            {
+                $this->addFlash('error', 'Seul un administrateur peut supprimer cette tâche');
+            }
+
+        }
+        elseif ($user->getId() == $task->getUser()->getId())
+        {
+            $em = $this->getDoctrine()->getManager();
+            $em->remove($task);
+            $em->flush();
+
+            $this->addFlash('success', 'La tâche a bien été supprimée.');
+        }
+        else
+        {
+            $this->addFlash('error', 'Seul l\'auteur de cette tâche peut la supprimer');
+        }
+
 
         return $this->redirectToRoute('task_list');
     }

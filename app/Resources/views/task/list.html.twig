@@ -14,6 +14,11 @@
                     </h4>
                     <h4><a href="{{ path('task_edit', {'id' : task.id }) }}">{{ task.title }}</a></h4>
                     <p>{{ task.content }}</p>
+                    {% if not task.getUser() %}<p>Crée par: Anonyme</p>
+                    {% else %}
+                    <p>Crée par: {{ task.getUser().getUsername() }}, le {{ task.getDateString() }}</p>
+                    {% endif %}
+                    {% if task.updatedAt %}<p>Modifiée le: {{ task.getUpdateString() }}</p>{% endif %}
                 </div>
                 <div>
                     <form action="{{ path('task_toggle', {'id' : task.id }) }}">
@@ -21,9 +26,9 @@
                             {% if not task.isDone %}Marquer comme faite{% else %}Marquer non terminée{% endif %}
                         </button>
                     </form>
-                    <form action="{{ path('task_delete', {'id' : task.id }) }}">
+                    <a href="{{ path('task_delete', {'id' : task.id }) }} " onclick="return confirm('Etes-vous sur de vouloir supprimer cette tâche?')">
                         <button class="btn btn-danger btn-sm pull-right">Supprimer</button>
-                    </form>
+                    </a>
                 </div>
             </div>
         </div>

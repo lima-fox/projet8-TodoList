@@ -24,6 +24,11 @@ class Task
     private $createdAt;
 
     /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $updatedAt;
+
+    /**
      * @ORM\Column(type="string")
      * @Assert\NotBlank(message="Vous devez saisir un titre.")
      */
@@ -39,6 +44,12 @@ class Task
      * @ORM\Column(type="boolean")
      */
     private $isDone;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="task")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     */
+    private $user;
 
     public function __construct()
     {
@@ -89,5 +100,39 @@ class Task
     public function toggle($flag)
     {
         $this->isDone = $flag;
+    }
+
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    public function setUser($user)
+    {
+        return $this->user = $user;
+    }
+
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+    }
+
+    public function getDateString()
+    {
+        return $this->getCreatedAt()->format('d-m-Y');
+    }
+
+    public function getUpdateString()
+    {
+        if ($this->getUpdatedAt() == null)
+        {
+            return "";
+        }
+        return $this->getUpdatedAt()->format('d-m-Y');
     }
 }
