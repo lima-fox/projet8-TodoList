@@ -161,7 +161,8 @@ class UserController extends Controller
      */
     public function DeleteUserAction(User $user)
     {
-        if ($this->getUser()->getRoles() == ["ROLE_ADMIN"] && $user->getRoles() == ["ROLE_SUPER_ADMIN"])
+        if (in_array('ROLE_ADMIN', $this->getUser()->getRoles()) &&
+            in_array('ROLE_SUPER_ADMIN', $user->getRoles()))
         {
             $this->addFlash('error', "Vous ne pouvez pas supprimer cet utilisateur.");
             return $this->redirectToRoute('user_list');

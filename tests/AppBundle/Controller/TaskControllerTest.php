@@ -4,6 +4,7 @@
 namespace Tests\AppBundle\Controller;
 
 
+use AppBundle\Entity\Task;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Tests\UserCo;
 
@@ -12,16 +13,17 @@ class TaskControllerTest extends WebTestCase
     use UserCo;
 
     private $client;
+    private $em;
 
     public function setUp()
     {
         $this->client = static::createClient();
+        $this->em = $this->client->getContainer()->get("doctrine.orm.entity_manager");
     }
 
     public function getLastTaskId()
     {
-        $em = $this->client->getContainer()->get("doctrine.orm.entity_manager");
-        return $em->createQueryBuilder()
+        return $this->em->createQueryBuilder()
             ->select('MAX(e.id)')
             ->from('AppBundle:Task', 'e')
             ->getQuery()
@@ -113,6 +115,25 @@ class TaskControllerTest extends WebTestCase
         $this->client->request('GET', "/tasks/$id/delete");
         $this->client->followRedirect();
         $this->assertEquals('200', $this->client->getResponse()->getStatusCode());
+    }
+
+    public function DeleteTaskAnonymous()
+    {
+        $task = new Task();
+        $task->setUser(null);
+        $task->setTitle('test title');
+        $task->setContent('test content');
+
+        $this->loginAsAdmin($this->client, $this);
+        $id = $this->getLastTaskId();
+        $this->client->request('GET', "/tasks/$id/delete");
+        $this->client->followRedirect();
+        $this->assertEquals('200', $this->client->getResponse()->getStatusCode());
+        $this->assertContains('Seul un administrateur peut supprimer cette tâche', $this->client->getResponse()->getContent());
+
+        $user = $this->em->getRepository("AppBundle:Task")->find($id);
+        $this->em->remove($task);
+        $this->em->flush();
     }
 
 }
