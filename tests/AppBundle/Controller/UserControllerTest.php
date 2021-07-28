@@ -5,6 +5,8 @@ namespace Tests\AppBundle\Controller;
 
 
 use AppBundle\Entity\User;
+use Blackfire\Client;
+use Blackfire\Profile\Configuration;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Tests\UserCo;
 
@@ -14,6 +16,23 @@ class UserControllerTest extends WebTestCase
 
     private $client;
     private $em;
+
+    static $probe;
+
+    static $blackfire;
+
+    public static function setUpBeforeClass()
+    {
+        $config = new Configuration();
+        $config->setTitle("Users");
+        static::$blackfire = new Client();
+        static::$probe = static::$blackfire->createProbe($config);
+    }
+
+    public static function tearDownAfterClass()
+    {
+        static::$blackfire->endProbe(static::$probe);
+    }
 
     public function setUp()
     {
@@ -140,9 +159,9 @@ class UserControllerTest extends WebTestCase
     public function testDeleteSuperAdminAsAdmin()
     {
         $user = new User();
-        $user->setUsername(sprintf('usertestdelete_%d', rand(1,100)));
+        $user->setUsername(sprintf('usertestdelete_%d', rand(1,1000)));
         $user->setPassword('pass');
-        $user->setEmail(sprintf('user_test_delete%d@test.com', rand(1,100)));
+        $user->setEmail(sprintf('user_test_delete%d@test.com', rand(1,1000)));
         $user->setRoles(['ROLE_SUPER_ADMIN']);
         $this->em->persist($user);
         $this->em->flush();

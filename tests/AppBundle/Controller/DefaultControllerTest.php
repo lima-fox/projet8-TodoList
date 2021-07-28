@@ -2,11 +2,30 @@
 
 namespace Tests\AppBundle\Controller;
 
+use Blackfire\Client;
+use Blackfire\Profile\Configuration;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class DefaultControllerTest extends WebTestCase
 {
     private $client;
+
+    static $probe;
+
+    static $blackfire;
+
+    public static function setUpBeforeClass()
+    {
+        $config = new Configuration();
+        $config->setTitle("Default");
+        static::$blackfire = new Client();
+        static::$probe = static::$blackfire->createProbe($config);
+    }
+
+    public static function tearDownAfterClass()
+    {
+        static::$blackfire->endProbe(static::$probe);
+    }
 
     public function setUp()
     {

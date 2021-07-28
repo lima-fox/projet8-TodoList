@@ -5,6 +5,8 @@ namespace Tests\AppBundle\Controller;
 
 
 use AppBundle\Entity\Task;
+use Blackfire\Client;
+use Blackfire\Profile\Configuration;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Tests\UserCo;
 
@@ -14,6 +16,23 @@ class TaskControllerTest extends WebTestCase
 
     private $client;
     private $em;
+
+    static $probe;
+
+    static $blackfire;
+
+    public static function setUpBeforeClass()
+    {
+        $config = new Configuration();
+        $config->setTitle("Tasks");
+        static::$blackfire = new Client();
+        static::$probe = static::$blackfire->createProbe($config);
+    }
+
+    public static function tearDownAfterClass()
+    {
+        static::$blackfire->endProbe(static::$probe);
+    }
 
     public function setUp()
     {

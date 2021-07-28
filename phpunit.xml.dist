@@ -29,6 +29,6 @@
         </whitelist>
     </filter>
     <logging>
-        <log type="coverage-text" target="php://stdout"/>
+        <log type="coverage-html" target="./tests/reports/" />
     </logging>
 </phpunit>
