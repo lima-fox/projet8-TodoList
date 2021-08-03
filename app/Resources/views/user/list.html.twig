@@ -19,6 +19,7 @@
                     <th>Adresse d'utilisateur</th>
                     <th>Actions</th>
                     <th>Admin Actions</th>
+                    <th>Supprimer</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -34,6 +35,9 @@
                             {% if is_granted('ROLE_SUPER_ADMIN') %}
                                 <a href="{{ path('owner_user_edit', {'id' : user.id}) }}" class="btn btn-success">[ADMIN] Edit</a>
                             {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ path('user_delete', {'id' : user.id}) }}" onclick="return confirm('Etes-vous sur de vouloir supprimer cet utilisateur?')" class="btn btn-danger">Supprimer</a>
                         </td>
                     </tr>
                 {% endfor %}

@@ -95,7 +95,7 @@ class UserController extends Controller
             $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
             $user->setPassword($password);
             $data = $request->request->all();
-            $role = $data['user']['roles'];
+            $role = $data['admin_user']['roles'];
             if ($role == self::ROLE_ADMIN)
             {
                 $user->setRoles(['ROLE_ADMIN']);
@@ -154,6 +154,27 @@ class UserController extends Controller
         }
 
         return $this->render('user/admin_edit.html.twig', ['form' => $form->createView(), 'user' => $user]);
+    }
+
+    /**
+     * @Route("/admin/users/{id}/delete", name="user_delete")
+     */
+    public function DeleteUserAction(User $user)
+    {
+        if (in_array('ROLE_ADMIN', $this->getUser()->getRoles()) &&
+            in_array('ROLE_SUPER_ADMIN', $user->getRoles()))
+        {
+            $this->addFlash('error', "Vous ne pouvez pas supprimer cet utilisateur.");
+            return $this->redirectToRoute('user_list');
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($user);
+        $em->flush();
+
+        $this->addFlash('success', "L'utilisateur a bien été supprimé");
+
+        return $this->redirectToRoute('user_list');
     }
 
 }

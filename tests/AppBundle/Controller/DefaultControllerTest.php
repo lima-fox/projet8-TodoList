@@ -2,17 +2,40 @@
 
 namespace Tests\AppBundle\Controller;
 
+use Blackfire\Client;
+use Blackfire\Profile\Configuration;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class DefaultControllerTest extends WebTestCase
 {
-    public function testIndex()
+    private $client;
+
+    static $probe;
+
+    static $blackfire;
+
+    public static function setUpBeforeClass()
     {
-        $client = static::createClient();
+        $config = new Configuration();
+        $config->setTitle("Default");
+        static::$blackfire = new Client();
+        static::$probe = static::$blackfire->createProbe($config);
+    }
 
-        $crawler = $client->request('GET', '/');
+    public static function tearDownAfterClass()
+    {
+        static::$blackfire->endProbe(static::$probe);
+    }
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertContains('Welcome to Symfony', $crawler->filter('#container h1')->text());
+    public function setUp()
+    {
+        $this->client = static::createClient();
+    }
+
+    /** @test  */
+    public function testPageIsFound() {
+        $this->client->request('GET', "/");
+
+        $this->assertTrue($this->client->getResponse()->isRedirection());
     }
 }

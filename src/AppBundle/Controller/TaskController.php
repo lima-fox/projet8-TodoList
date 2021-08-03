@@ -21,6 +21,8 @@ class TaskController extends Controller
 
     /**
      * @Route("/tasks/create", name="task_create")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function createAction(Request $request)
     {
@@ -30,7 +32,7 @@ class TaskController extends Controller
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $task->setUser($user);
 
@@ -58,7 +60,7 @@ class TaskController extends Controller
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $updatedAt = new \DateTime();
             $task->setUpdatedAt($updatedAt);
 
@@ -111,6 +113,7 @@ class TaskController extends Controller
                 $this->addFlash('error', 'Seul un administrateur peut supprimer cette tâche');
             }
 
+            
         }
         elseif ($user->getId() == $task->getUser()->getId())
         {
