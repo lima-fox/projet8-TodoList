@@ -25,3 +25,12 @@ INSERT INTO `user` (`id`, `username`, `password`, `email`, `roles`) VALUES (NULL
 vendor/bin/phpunit
 ```
 
+---
+
+## Contribuer au projet
+
+https://github.com/lima-fox/projet8-TodoList/blob/master/CONTRIBUTING.md
+
+## Codacy
+
+https://app.codacy.com/gh/lima-fox/projet8-TodoList/dashboard
